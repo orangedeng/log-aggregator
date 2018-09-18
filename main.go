@@ -13,11 +13,9 @@ import (
 var VERSION = "v0.0.0-dev"
 var logFileName = "/var/log/rancher-flexvolume.log"
 
-func setLog(file *os.File) *logrus.Logger {
-	log := logrus.New()
-	log.Out = file
-	log.Level = logrus.DebugLevel
-	return log
+func setLog(file *os.File) {
+	logrus.SetOutput(file)
+	logrus.SetLevel(logrus.DebugLevel)
 }
 
 func main() {
@@ -27,27 +25,25 @@ func main() {
 	}
 
 	defer file.Close()
-	logger := setLog(file)
+	setLog(file)
 
 	app := cli.NewApp()
 	app.Name = "log-aggregator"
 	app.Version = VERSION
 	app.Usage = "local-flexvolme driver to mount log to workload logging path"
 
-	app.Commands = getCommand(logger)
+	app.Commands = getCommand()
 	app.Run(os.Args)
 }
 
-func getCommand(logger *logrus.Logger) []cli.Command {
-	flexVolumeDriver := driver.FlexVolumeDriver{
-		Logger: logger,
-	}
+func getCommand() []cli.Command {
+	flexVolumeDriver := driver.FlexVolumeDriver{}
 	return []cli.Command{
 		{
 			Name:  "init",
 			Usage: "init func",
 			Action: func(c *cli.Context) error {
-				logger.Info("init function call")
+				logrus.Info("init function call")
 				return printResponse(flexVolumeDriver.Init())
 			},
 		},
