@@ -115,7 +115,7 @@ func (f *FlexVolumeDriver) Mount(args []string) CommonResponse {
 	switch len(args) {
 	case 2:
 	case 3:
-		logrus.Warnf("flex volume from kubelet is standard, args length is %d", len(args))
+		logrus.Warnf("flex volume args from kubelet is not standard, args length is %d", len(args))
 	default:
 		return returnErrorResponse(fmt.Errorf("mount: invalid args num, %v", args))
 	}
